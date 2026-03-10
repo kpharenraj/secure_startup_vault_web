@@ -8,7 +8,7 @@ def create_app():
 
     # --- CLOUD DEPLOYMENT HARDWIRING ---
     # Use Vercel Environment Variables if they exist, otherwise use local defaults
-    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'fixed-secret-key-for-vercel-2026-secure-vault')
+    app.config['SECRET_KEY'] = 'fixed-secret-key-for-vercel-2026-secure-vault'
     
     database_url = os.environ.get('DATABASE_URL')
     if database_url:
