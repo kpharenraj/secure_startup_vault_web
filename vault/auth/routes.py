@@ -95,30 +95,12 @@ def register():
     if current_user.is_authenticated:
         return redirect(url_for('main.dashboard'))
     
-    if request.method == 'POST':
-        email = request.form.get('email')
-        password = request.form.get('password')
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        email = form.email.data
+        password = form.password.data
         
         try:
-            # Validation
-            email_regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-            if not re.match(email_regex, email):
-                flash('Invalid email address format.', 'danger')
-                return render_template('auth/login.html', form=RegistrationForm())
-
-            if len(password) < 8:
-                flash('Password must be at least 8 characters long.', 'danger')
-                return render_template('auth/login.html', form=RegistrationForm())
-                
-            if not re.search(r'[a-zA-Z]', password) or not re.search(r'[0-9]', password):
-                 flash('Password must contain both letters and numbers.', 'danger')
-                 return render_template('auth/login.html', form=RegistrationForm())
-
-            existing_user = User.query.filter_by(email=email).first()
-            if existing_user:
-                 flash('Email already exists.', 'danger')
-                 return render_template('auth/login.html', form=RegistrationForm())
-
             from vault.crypto_utils import generate_user_keys
             priv_key, pub_key = generate_user_keys()
             
@@ -140,29 +122,25 @@ def register():
             db.session.commit()
             
             # Send Email
-            from vault.auth.utils import send_otp_email
             send_otp_email(new_user)
             
             # Debug OTP
             print(f"\n{'='*30}")
             print(f"DEBUG OTP (Register): {otp}")
             print(f"DEBUG New User ID: {new_user.id}")
-            print(f"{'='*30}\n")
-            
-            # Store user ID in session for verify_otp
-            session['pre_2fa_user_id'] = new_user.id
-            session.modified = True # Force session save
-            flash('Account created! OTP sent to your email.', 'info')
-            return redirect(url_for('auth.verify_otp'))
-            # ----------------------------------
+            print(f"{'='*30}\n") 
 
+            # Store user ID in session for the next step
+            session['pre_2fa_user_id'] = new_user.id
+            flash('OTP sent to your email. Please verify to complete registration.', 'info')
+            return redirect(url_for('auth.verify_otp'))
+            
         except Exception as e:
             db.session.rollback()
             print(f"REGISTER ERROR: {e}")
-            flash(f'An error occurred during registration: {str(e)}', 'danger')
-            return render_template('auth/login.html', form=RegistrationForm())
-        
-    return render_template('auth/login.html', form=RegistrationForm())
+            flash(f'An error occurred: {str(e)}', 'danger')
+            
+    return render_template('auth/login.html', form=form)
 
 @auth_bp.route("/logout")
 def logout():

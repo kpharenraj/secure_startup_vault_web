@@ -7,7 +7,7 @@ function toggleAuth() {
     const confirmGroup = document.getElementById('confirm-pass-group');
     const confirmInput = document.getElementById('confirm_field');
 
-    // Check if we are currently in Login mode (default)
+    // Check current mode based on button text
     const isLoginMode = submitBtn.innerText.trim() === "Login";
 
     if (isLoginMode) {
@@ -20,19 +20,41 @@ function toggleAuth() {
             toggleLink.innerHTML = 'Already have an account? <a href="javascript:void(0)" onclick="toggleAuth()">Login</a>';
         }
 
-        // Update Form
-        if (authForm) authForm.action = "/register";
+        // Update Form action
+        if (authForm) authForm.action = "{{ url_for('auth.register') }}";
         if (submitBtn) submitBtn.innerText = "Create Account";
 
         // Show Confirm Password
         if (confirmGroup) {
             confirmGroup.style.display = "block";
-            if (confirmInput) confirmInput.setAttribute('required', 'required');
+            if (confirmInput) {
+                confirmInput.required = true;
+                confirmInput.style.display = "block";
+            }
         }
 
     } else {
         // Switch back to Login Mode
-        location.reload();
+        if (title) title.innerText = "SECURE STARTUP VAULT";
+        if (subtitle) subtitle.innerText = "Welcome back! Please login to your account.";
+
+        // Update Link
+        if (toggleLink) {
+            toggleLink.innerHTML = 'Don\'t have an account? <a href="javascript:void(0)" onclick="toggleAuth()">Register</a>';
+        }
+
+        // Update Form action
+        if (authForm) authForm.action = "{{ url_for('auth.login') }}";
+        if (submitBtn) submitBtn.innerText = "Login";
+
+        // Hide Confirm Password
+        if (confirmGroup) {
+            confirmGroup.style.display = "none";
+            if (confirmInput) {
+                confirmInput.required = false;
+                confirmInput.style.display = "none";
+            }
+        }
     }
 }
 
