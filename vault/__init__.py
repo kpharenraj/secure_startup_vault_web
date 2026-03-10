@@ -115,7 +115,7 @@ def create_app():
     # Add common headers to mitigate scripting attacks and clickjacking
     @app.after_request
     def set_security_headers(response):
-        response.headers['Content-Security-Policy'] = "default-src 'self';"
+        response.headers['Content-Security-Policy'] = "default-src 'self'; img-src 'self' https://upload.wikimedia.org; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline';"
         response.headers['X-Content-Type-Options'] = 'nosniff'
         response.headers['X-Frame-Options'] = 'DENY'
         response.headers['Referrer-Policy'] = 'no-referrer'
