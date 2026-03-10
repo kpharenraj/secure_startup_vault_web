@@ -111,5 +111,14 @@ def create_app():
         if not os.path.exists(app.config['UPLOAD_FOLDER']):
             os.makedirs(app.config['UPLOAD_FOLDER'])
 
+    # --- SECURITY HEADERS ---
+    # Add common headers to mitigate scripting attacks and clickjacking
+    @app.after_request
+    def set_security_headers(response):
+        response.headers['Content-Security-Policy'] = "default-src 'self';"
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        response.headers['X-Frame-Options'] = 'DENY'
+        response.headers['Referrer-Policy'] = 'no-referrer'
+        return response
 
     return app
