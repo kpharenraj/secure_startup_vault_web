@@ -18,9 +18,9 @@ def login():
         return redirect(url_for('main.dashboard'))
     
     form = LoginForm()
-    if request.method == 'POST':
-        email = request.form.get('email')
-        password = request.form.get('password')
+    if form.validate_on_submit():
+        email = form.email.data
+        password = form.password.data
         
         try:
             user = User.query.filter_by(email=email).first()
@@ -51,7 +51,6 @@ def login():
             db.session.rollback()
             print(f"LOGIN ERROR: {e}") # This will show in Vercel logs
             flash(f'An error occurred: {str(e)}', 'danger')
-            return render_template('auth/login.html', form=form)
             
     return render_template('auth/login.html', form=form)
 
