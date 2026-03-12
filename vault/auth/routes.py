@@ -12,6 +12,18 @@ import string
 from datetime import datetime, timedelta
 import re
 
+# for CSRF error handling
+from flask_wtf.csrf import CSRFError
+
+
+@auth_bp.errorhandler(CSRFError)
+def handle_csrf(error):
+    # log useful debug info; in production you might hide details
+    print(f"CSRFError on {request.method} {request.path}: {error.description}")
+    # you may want to re-render the login page with a flash message
+    flash('Form submission failed due to invalid CSRF token. Please try again.', 'danger')
+    return redirect(url_for('auth.login'))
+
 @auth_bp.route("/login", methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
