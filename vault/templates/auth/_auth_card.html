@@ -10,14 +10,12 @@
             {{ form.csrf_token }}
 
             <div class="input-group">
-                <input type="email" name="email" id="email_field" class="form-input" placeholder="Email Address"
-                    required>
+                {{ form.email(class="form-input", placeholder="Email Address", required=True) }}
             </div>
 
             <div class="input-group" style="position: relative;">
-                <input type="password" name="password" id="pass_field" class="form-input" placeholder="Password"
-                    required>
-                <span class="password-toggle" onclick="togglePassword('pass_field')">SHOW</span>
+                {{ form.password(class="form-input", placeholder="Password", required=True) }}
+                <span class="password-toggle" onclick="togglePassword('password')">SHOW</span>
             </div>
 
             <div class="input-group" id="confirm-pass-group" style="display: none;">
@@ -25,7 +23,7 @@
                     placeholder="Confirm Password">
             </div>
 
-            <button type="submit" class="btn-auth" id="submit-btn">Login</button>
+            <button type="submit" class="btn-auth" id="submit-btn">{{ form.submit.label.text }}</button>
         </form>
 
         <div class="auth-footer" style="margin-top: 20px;">

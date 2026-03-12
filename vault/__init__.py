@@ -8,7 +8,7 @@ def create_app():
 
     # --- CLOUD DEPLOYMENT HARDWIRING ---
     # Use Vercel Environment Variables if they exist, otherwise use local defaults
-    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-key-123')
+    app.config['SECRET_KEY'] = 'fixed-secret-key-for-vercel-2026-secure-vault'
     
     database_url = os.environ.get('DATABASE_URL')
     if database_url:
@@ -111,6 +111,15 @@ def create_app():
         if not os.path.exists(app.config['UPLOAD_FOLDER']):
             os.makedirs(app.config['UPLOAD_FOLDER'])
 
+    # --- SECURITY HEADERS ---
+    # Add common headers to mitigate scripting attacks and clickjacking
+    @app.after_request
+    def set_security_headers(response):
+        response.headers['Content-Security-Policy'] = "default-src 'self'; img-src 'self' https://upload.wikimedia.org; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline';"
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        response.headers['X-Frame-Options'] = 'DENY'
+        response.headers['Referrer-Policy'] = 'no-referrer'
+        return response
 
     return app
 
