@@ -6,7 +6,9 @@
     </div>
 
     <div id="login-section" style="width: 100%;">
-        <form method="POST" action="{{ url_for('auth.login') }}" id="auth-form">
+        {# determine if we're rendering register form; controller should pass register_mode bool #}
+        {% set register_mode = register_mode if register_mode is defined else (request.path == '/register') %}
+        <form method="POST" action="{{ url_for('auth.register') if register_mode else url_for('auth.login') }}" id="auth-form">
             {# hidden_tag renders CSRF token plus any other hidden fields #}
             {{ form.hidden_tag() }}
 
@@ -19,12 +21,15 @@
                 <span class="password-toggle" onclick="togglePassword('password')">SHOW</span>
             </div>
 
-            <div class="input-group" id="confirm-pass-group" style="display: none;">
-                <input type="password" name="confirm_password" id="confirm_field" class="form-input"
-                    placeholder="Confirm Password">
+            {% if register_mode %}
+            <div class="input-group" id="confirm-pass-group">
+                {{ form.confirm_password(class="form-input", placeholder="Confirm Password", required=True) }}
             </div>
+            {% endif %}
 
-            <button type="submit" class="btn-auth" id="submit-btn">{{ form.submit.label.text }}</button>
+            <button type="submit" class="btn-auth" id="submit-btn">
+                {{ 'Create Account' if register_mode else 'Login' }}
+            </button>
         </form>
 
         <div class="auth-footer" style="margin-top: 20px;">
@@ -42,6 +47,10 @@
     </button>
 
     <div class="auth-footer">
-        <p id="toggle-msg">Don't have an account? <a href="javascript:void(0)" onclick="toggleAuth()">Register</a></p>
+        {% if register_mode %}
+        <p id="toggle-msg">Already have an account? <a href="{{ url_for('auth.login') }}">Login</a></p>
+        {% else %}
+        <p id="toggle-msg">Don't have an account? <a href="{{ url_for('auth.register') }}">Register</a></p>
+        {% endif %}
     </div>
 </div>

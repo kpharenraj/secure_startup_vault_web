@@ -52,7 +52,8 @@ def login():
             print(f"LOGIN ERROR: {e}") # This will show in Vercel logs
             flash(f'An error occurred: {str(e)}', 'danger')
             
-    return render_template('auth/login.html', form=form)
+    # render the template, ensuring register_mode is False
+    return render_template('auth/login.html', form=form, register_mode=False)
 
 @auth_bp.route("/verify-otp", methods=['GET', 'POST'])
 def verify_otp():
@@ -140,7 +141,8 @@ def register():
             print(f"REGISTER ERROR: {e}")
             flash(f'An error occurred: {str(e)}', 'danger')
             
-    return render_template('auth/login.html', form=form)
+    # when displaying registration page, signal register_mode=True
+    return render_template('auth/login.html', form=form, register_mode=True)
 
 @auth_bp.route("/logout")
 def logout():
