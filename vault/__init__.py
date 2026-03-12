@@ -33,6 +33,12 @@ def create_app():
         'secure-startup-vault-9mbsxgl7x-haren-rajs-projects-96cdf1d7.vercel.app',
         '*.vercel.app'
     ]
+    
+    # --- SECURE COOKIE CONFIG FOR PRODUCTION ---
+    if os.environ.get('VERCEL'):
+        app.config['SESSION_COOKIE_SECURE'] = True       # Only send over HTTPS
+        app.config['SESSION_COOKIE_HTTPONLY'] = True     # No JS access to session cookie
+        app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'    # Prevent CSRF cookie leaks
     # -----------------------------------
 
     db.init_app(app)
