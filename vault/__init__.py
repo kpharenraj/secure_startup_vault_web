@@ -127,11 +127,33 @@ def create_app():
     # Add common headers to mitigate scripting attacks and clickjacking
     @app.after_request
     def set_security_headers(response):
-        response.headers['Content-Security-Policy'] = "default-src 'self'; img-src 'self' https://upload.wikimedia.org; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline';"
+        # Prevent browser from trying to MIME-type sniff
         response.headers['X-Content-Type-Options'] = 'nosniff'
+        
+        # Block clickjacking (prevent embedding in iframes)
         response.headers['X-Frame-Options'] = 'DENY'
-        # IMPORTANT: ensure browser sends Referer header for CSRF checks
+        
+        # Ensure Referer header is sent for CSRF protection
         response.headers['Referrer-Policy'] = 'same-origin'
+        
+        # Prevent XSS attacks (supported by older browsers)
+        response.headers['X-XSS-Protection'] = '1; mode=block'
+        
+        # Content Security Policy - restrictive but allows necessary resources
+        response.headers['Content-Security-Policy'] = (
+            "default-src 'self'; "
+            "img-src 'self' https: data:; "
+            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+            "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
+            "font-src 'self' https://fonts.gstatic.com; "
+            "connect-src 'self' https:; "
+            "frame-ancestors 'none'"
+        )
+        
+        # HTTPS enforcement (only set if not in development)
+        if not app.debug and os.environ.get('VERCEL'):
+            response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains; preload'
+        
         return response
 
     return app
