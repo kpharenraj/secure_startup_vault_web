@@ -18,15 +18,11 @@ from flask_wtf.csrf import CSRFError
 
 @auth_bp.errorhandler(CSRFError)
 def handle_csrf(error):
-    # log useful debug info; in production you might hide details
-    import traceback
+    # log the CSRF error for debugging
     print(f"CSRFError on {request.method} {request.path}: {error.description}")
-    print(f"Session data: {dict(session)}")
-    print(f"Request cookies: {request.cookies}")
-    print(f"POST data keys: {list(request.form.keys())}")
-    traceback.print_stack()
-    # you may want to re-render the login page with a flash message
-    flash(f'CSRF Error: {error.description}', 'danger')
+    print(f"  Referer header: {request.headers.get('Referer', 'MISSING')}")
+    print(f"  Origin header: {request.headers.get('Origin', 'MISSING')}")
+    flash('Form submission failed. Please try again.', 'danger')
     return redirect(url_for('auth.login'))
 
 @auth_bp.route("/login", methods=['GET', 'POST'])

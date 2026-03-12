@@ -21,6 +21,18 @@ def create_app():
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../instance/vault.db'
     
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    
+    # --- CSRF CONFIGURATION FOR VERCEL ---
+    # On Vercel, the Referer header is often missing; disable strict referrer checks
+    app.config['WTF_CSRF_SSL_STRICT'] = False
+    app.config['WTF_CSRF_CHECK_DEFAULT'] = True
+    # Trust requests from Vercel domains
+    app.config['WTF_CSRF_TRUSTED_HOSTS'] = [
+        'localhost',
+        '127.0.0.1',
+        'secure-startup-vault-9mbsxgl7x-haren-rajs-projects-96cdf1d7.vercel.app',
+        '*.vercel.app'
+    ]
     # -----------------------------------
 
     db.init_app(app)
@@ -118,7 +130,8 @@ def create_app():
         response.headers['Content-Security-Policy'] = "default-src 'self'; img-src 'self' https://upload.wikimedia.org; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline';"
         response.headers['X-Content-Type-Options'] = 'nosniff'
         response.headers['X-Frame-Options'] = 'DENY'
-        response.headers['Referrer-Policy'] = 'no-referrer'
+        # IMPORTANT: ensure browser sends Referer header for CSRF checks
+        response.headers['Referrer-Policy'] = 'same-origin'
         return response
 
     return app
@@ -126,4 +139,3 @@ def create_app():
 
 
 
-    
