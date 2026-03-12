@@ -7,7 +7,8 @@
 
     <div id="login-section" style="width: 100%;">
         <form method="POST" action="{{ url_for('auth.login') }}" id="auth-form">
-            {{ form.csrf_token }}
+            {# hidden_tag renders CSRF token plus any other hidden fields #}
+            {{ form.hidden_tag() }}
 
             <div class="input-group">
                 {{ form.email(class="form-input", placeholder="Email Address", required=True) }}

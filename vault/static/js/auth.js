@@ -72,12 +72,14 @@ function setRegisterMode() {
 }
 
 function toggleAuth() {
+    // Instead of manipulating the form on the client, navigate to the
+    // proper URL so that the server can issue a fresh CSRF token.
     const submitBtn = document.getElementById('submit-btn');
-    const isLoginMode = submitBtn.innerText.trim() === "Login";
+    const isLoginMode = submitBtn && submitBtn.innerText.trim() === "Login";
 
     if (isLoginMode) {
-        setRegisterMode();
+        window.location.href = "/register";
     } else {
-        setLoginMode();
+        window.location.href = "/login";
     }
 }
