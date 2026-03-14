@@ -1,6 +1,5 @@
 import os
 from flask import Flask
-# Added 'csrf' to the import list
 from .extensions import db, login_manager, main_bp, csrf, mail 
 
 def create_app():
@@ -163,7 +162,3 @@ def create_app():
         return response
 
     return app
-
-
-
-

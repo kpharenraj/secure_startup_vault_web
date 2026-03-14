@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta name="google-site-verification" content="J-3qT1YwTFPaxkWmWikrd2O2Urvds3W9NMAyD9k0r1c" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Secure Startup Vault</title>
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='img/shield-icon.svg') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/switches.css') }}">
@@ -13,7 +13,6 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/footers.css') }}">
 </head>
-
 <body>
     {% if current_user.is_authenticated %}
     {% include 'partials/_vault_sidebar.html' %}
@@ -50,5 +49,4 @@
         </div>
     </footer>
 </body>
-
 </html>

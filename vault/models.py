@@ -47,8 +47,6 @@ class Role(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
     company_id = db.Column(db.Integer, db.ForeignKey('company.id'))
-    
-    # Permissions (Feature #7: Company role config page)
     perm_admin = db.Column(db.Boolean, default=False)
     perm_view = db.Column(db.Boolean, default=True)
     perm_modify = db.Column(db.Boolean, default=False)

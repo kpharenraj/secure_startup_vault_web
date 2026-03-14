@@ -241,3 +241,7 @@ def robots():
     response = make_response("\n".join(lines))
     response.headers["Content-Type"] = "text/plain"
     return response
+
+@main_bp.route('/favicon.ico')
+def favicon():
+    return current_app.send_static_file('img/shield-icon.svg')
