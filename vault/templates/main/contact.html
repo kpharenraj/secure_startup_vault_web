@@ -12,10 +12,13 @@
                             to the development team.</p>
                         <div class="legal-text">
                             <div class="legal-section">
-                                <strong>Team Leader:</strong> &nbsp; Haren Raj
+                                <strong>Developer:</strong> &nbsp; K P Haren Raj
                             </div>
                             <div class="legal-section">
-                                <strong>Role:</strong> &nbsp; Lead Architect & Cloud Deployment
+                                <strong>Email:</strong> &nbsp; <a href="mailto:koyalkarpulkalharenraj@gmail.com">koyalkarpulkalharenraj@gmail.com</a>
+                            </div>
+                            <div class="legal-section">
+                                <strong>Role:</strong> &nbsp; Lead Architect, Full-Stack Developer & Cloud Deployment
                             </div>
                             <div class="legal-section">
                                 <strong>Project:</strong> &nbsp; Secure Startup Vault v1.0
@@ -29,29 +32,25 @@
 
                     <div class="col-md-7 p-5 bg-white">
                         <h2 class="legal-header">Send a Message</h2>
-                        <form action="#" method="post" class="contact-form">
+                        <form action="{{ url_for('main.contact') }}" method="post" class="contact-form">
+                            {{ form.hidden_tag() }}
                             <div class="form-div">
-                                <label class="form-label" >Full Name</label>
-                                <input type="text" class="form-control" placeholder="Enter your name" required>
+                                <label class="form-label" for="name">{{ form.name.label.text }}</label>
+                                {{ form.name(class="form-control", id="name", placeholder="Enter your name") }}
                             </div>
                             <div class="form-div">
-                                <label class="form-label">Email Address</label>
-                                <input type="email" class="form-control" placeholder="name@example.com" required>
+                                <label class="form-label" for="email">{{ form.email.label.text }}</label>
+                                {{ form.email(class="form-control", id="email", placeholder="name@example.com") }}
                             </div>
                             <div class="form-div">
-                                <label class="form-label">Subject</label>
-                                <select class="form-select">
-                                    <option>Technical Inquiry</option>
-                                    <option>Security Feedback</option>
-                                    <option>Collaboration</option>
-                                    <option>Other</option>
-                                </select>
+                                <label class="form-label" for="subject">{{ form.subject.label.text }}</label>
+                                {{ form.subject(class="form-select", id="subject") }}
                             </div>
                             <div class="form-div">
-                                <label class="form-label">Message</label>
-                                <textarea class="form-control" rows="4" placeholder="How can we help you?"></textarea>
+                                <label class="form-label" for="message">{{ form.message.label.text }}</label>
+                                {{ form.message(class="form-control", id="message", rows="4", placeholder="How can I help you?") }}
                             </div>
-                            <button type="submit" class="btn btn-contact w-100">Send Message</button>
+                            <button type="submit" class="btn btn-contact w-100">{{ form.submit.label.text }}</button>
                         </form>
                     </div>
                 </div>

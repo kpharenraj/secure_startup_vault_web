@@ -4,11 +4,13 @@ import io
 from flask import render_template, url_for, flash, redirect, request, current_app, send_file, make_response
 from flask_login import current_user, login_required
 from flask_wtf.csrf import generate_csrf
+from flask_mail import Message
 from vault import db
 # CHANGE: Import the blueprint from the local __init__.py file
 from vault.extensions import main_bp 
-from vault.main.forms import UploadFileForm
+from vault.main.forms import UploadFileForm, ContactForm
 from vault.models import File, Company, memberships
+from vault.auth.utils import send_email_sync
 from sqlalchemy import select
 
 def _get_user_companies():
@@ -205,9 +207,46 @@ def terms():
     return render_template('main/terms.html', companies=_get_user_companies())
 
 
-@main_bp.route('/contact')
+@main_bp.route('/contact', methods=['GET', 'POST'])
 def contact():
-    return render_template('main/contact.html', companies=_get_user_companies())
+    form = ContactForm()
+    if form.validate_on_submit():
+        sender_name = form.name.data.strip()
+        sender_email = form.email.data.strip()
+        subject = form.subject.data
+        message_body = form.message.data.strip()
+        admin_email = 'koyalkarpulkalharenraj@gmail.com'
+
+        mail_user = current_app.config.get('MAIL_USERNAME')
+        mail_password = current_app.config.get('MAIL_PASSWORD')
+        if not mail_user or not mail_password:
+            flash(
+                'Email service is not configured right now. Please contact me directly at koyalkarpulkalharenraj@gmail.com.',
+                'warning'
+            )
+            return redirect(url_for('main.contact'))
+
+        msg = Message(
+            subject=f'Contact Form - {subject}',
+            sender=mail_user,
+            recipients=[admin_email]
+        )
+        msg.body = (
+            f'Contact form message from {sender_name} <{sender_email}>\n\n'
+            f'Subject: {subject}\n\n'
+            f'{message_body}\n\n'
+            'Please reply to the sender email address above.'
+        )
+
+        try:
+            send_email_sync(current_app._get_current_object(), msg)
+            flash('Your message was sent successfully. I will contact you soon.', 'success')
+        except Exception as e:
+            current_app.logger.error(f'Contact email error: {e}')
+            flash('Unable to send your message right now. Please try again later.', 'danger')
+        return redirect(url_for('main.contact'))
+
+    return render_template('main/contact.html', companies=_get_user_companies(), form=form)
 
 @main_bp.route('/sitemap.xml')
 def sitemap():
